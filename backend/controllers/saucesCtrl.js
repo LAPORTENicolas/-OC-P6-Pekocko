@@ -10,7 +10,7 @@ exports.getSauces   = (req, res) => {
 
 // Enregistre une nouvelle sauce, req = {sauce: Chaîne, image: Fichier}, res = {message}
 exports.newSauce    = (req, res) => {
-    res.status(200).json({message: 'Sauce enregistrer'});
+    res.status(500).json({message: 'Sauce enregistrer'});
 }
 
 // Met a jour la sauce req = Sauce(JSON) OU {sauce: Chaîne, image: Fichier}, res = {message}
