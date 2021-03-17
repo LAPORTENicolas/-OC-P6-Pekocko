@@ -32,7 +32,7 @@ exports.login  = (req, res) => {
                         if (!valid){ res.status(401).json({error: 'Le mot de passe n\'est pas correct'})}
                         // Si les mdp corresponde envoie les données utlisateur
                         res.status(200).json({
-                            userIDd: user[0]._id,
+                            userId: user[0]._id,
                             token: jwt.sign(
                                 { userId: user[0].id },
                                 'RANDOM_TOKEN_SECRET',
