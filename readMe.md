@@ -1,0 +1,1 @@
+Le projet utlise node 8.9, pour angular
