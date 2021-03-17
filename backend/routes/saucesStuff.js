@@ -1,5 +1,6 @@
 const express   = require('express');
 const ctrl      = require('../controllers/saucesCtrl');
+const multer   = require('../middleware/multer-config');
 const router    = express.Router();
 
 router.get('/', ctrl.listSauces);
