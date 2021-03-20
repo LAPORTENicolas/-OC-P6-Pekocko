@@ -1,11 +1,12 @@
 const express       = require('express');
 const bodyParser    = require('body-parser');
+const path          = require('path');
 const mongoose      = require('mongoose');
 const routesLogin   = require('./routes/authStuff');
 const routesOther   = require('./routes/saucesStuff');
 const app           = express();
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 mongoose.connect('mongodb+srv://user:azert123@cluster0.syoaz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true})
     .then(() => { console.log('connecté a mongoDB'); })
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', routesLogin);
 app.use('/api/sauces', routesOther);
 
