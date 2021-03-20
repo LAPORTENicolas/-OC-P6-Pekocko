@@ -31,7 +31,15 @@ exports.newSauce    = (req, res) => {
 
 // Met a jour la sauce req = Sauce(JSON) OU {sauce: Chaîne, image: Fichier}, res = {message}
 exports.putSauce    = (req, res) => {
-    res.status(201).json({message: 'Sauce modifié'});
+    Sauce.updateOne({_id: req.params.id}, {
+        name: req.body.name,
+        manufacturer: req.body.manufacturer,
+        description: req.body.description,
+        mainPepper: req.body.mainPepper,
+        heat: req.body.heat,
+    })
+        .then(() => res.status(201).json({message: 'Sauce modifié'}))
+        .catch( err => res.status(500).json(err));
 }
 
 // Supprime une sauce req = vide, res = {message}
