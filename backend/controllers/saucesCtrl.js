@@ -36,9 +36,12 @@ exports.putSauce    = (req, res) => {
 
 // Supprime une sauce req = vide, res = {message}
 exports.deleteSauce = (req, res) => {
-    res.status(200).json({message: 'Sauce supprimé'});
+    Sauce.deleteOne({_id: req.params.id})
+        .then( () => res.status(200).json({message: 'Sauce supprimé'}))
+        .catch( err => res.status(500).json(err));
 }
 
+// Permet de liker ou de disliker
 exports.like = (req, res) => {
     res.status(201).json({message: 'Like enregistée'})
 }
