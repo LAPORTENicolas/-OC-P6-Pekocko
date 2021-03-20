@@ -43,5 +43,28 @@ exports.deleteSauce = (req, res) => {
 
 // Permet de liker ou de disliker
 exports.like = (req, res) => {
-    res.status(201).json({message: 'Like enregistée'})
+    switch (req.body.like){
+        case 0:
+            Sauce.findOne({_id: req.params.id}, (err, data) => {
+                for (let i in data.usersLiked){
+                    if (data.usersLiked[i] === req.body.userId) {
+                        data.usersLiked.splice(i, 1);
+                        data.likes--;
+                    }
+                }
+            })
+            res.status(201).json();
+            break;
+        case 1:
+            Sauce.updateOne({_id: req.params.id}, {$push: {usersLiked: req.body.userId}, $inc: {likes: 1}})
+                .then(() => res.status(201).json({message: 'Liker'}))
+                .catch( err => res.status(401).json(err))
+            break;
+        case -1:
+            console.log('-1');
+            Sauce.updateOne({_id: req.params.id}, {$push: {usersDisliked: req.body.userId}, $inc: {dislikes: 1}})
+                .then(() => res.status(201).json({message: 'Disliker'}))
+                .catch( err => res.status(401).json(err))
+            break;
+    }
 }
