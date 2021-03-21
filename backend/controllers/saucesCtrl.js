@@ -1,4 +1,5 @@
 const Sauce = require('../models/sauce');
+const fs    = require('fs');
 
 // Envoie la liste des sauces, req = vide, res = tableau des sauces
 exports.listSauces  = (req, res) => {
@@ -44,23 +45,58 @@ exports.putSauce    = (req, res) => {
 
 // Supprime une sauce req = vide, res = {message}
 exports.deleteSauce = (req, res) => {
-    Sauce.deleteOne({_id: req.params.id})
-        .then( () => res.status(200).json({message: 'Sauce supprimé'}))
-        .catch( err => res.status(500).json(err));
+    // Vérifie si la sauce existe
+    Sauce.findOne({_id: req.params.id})
+        // Si elle existe
+        .then(data => {
+            const fileName = data.imageUrl.split('/images/')[1];
+            // Suprime l'image
+            fs.unlink(`images/${fileName}`, () => {
+                // Supprime la sauce
+                Sauce.deleteOne({_id: req.params.id})
+                    .then( () => res.status(200).json({message: 'Sauce supprimé'}))
+                    .catch( err => res.status(500).json(err));
+            })
+        })
+        .catch(err => res.status(500).json(err))
 }
 
 // Permet de liker ou de disliker
 exports.like = (req, res) => {
     switch (req.body.like){
         case 0:
-            Sauce.findOne({_id: req.params.id}, (err, data) => {
-                for (let i in data.usersLiked){
-                    if (data.usersLiked[i] === req.body.userId) {
-                        data.usersLiked.splice(i, 1);
-                        data.likes--;
+            Sauce.findOne({_id: req.params.id})
+                .then(data => {
+                    for (let i in data.usersDisliked){
+                        if (data.usersDisliked[i] === req.body.userId){
+                            let tmpTab      = data.usersDisliked;
+                            let tmpDislike  = data.dislikes - 1;
+                            tmpTab.splice(i, 1);
+                            Sauce.updateOne({_id: req.params.id}, {usersDisliked: tmpTab, dislikes: tmpDislike})
+                                .then(() => res.stack(201).json({message: 'Dislike retiré'}))
+                                .catch(err => res.stack(500).json(err));
+                        }
                     }
-                }
-            })
+                    for (let i in data.usersLiked){
+                        if (data.usersLiked[i] === req.body.userId){
+                            let tmpTab  = data.usersLiked;
+                            let tmpLike = data.likes - 1;
+                            tmpTab.splice(i, 1);
+                            Sauce.updateOne({_id: req.params.id}, {usersLiked: tmpTab, likes: tmpLike})
+                                .then(() => res.stack(201).json({message: 'Like retiré'}))
+                                .catch(err => res.stack(500).json(err));
+                        }
+                    }
+                })
+                .catch(err => res.stack(400).json(err));
+
+            /*
+            Sauce.find({_id: req.params.id, usersLiked: req.body.userId})
+                .then(() => {
+                    Sauce.updateOne({_id})
+                })
+
+             */
             res.status(201).json();
             break;
         case 1:
