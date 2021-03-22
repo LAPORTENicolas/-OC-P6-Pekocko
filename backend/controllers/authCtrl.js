@@ -5,9 +5,9 @@ const User      = require('../models/user');
 
 // Creation dun compte, req = {email: string, password: string}, res{message: string}
 exports.signup  = (req, res) => {
-    // Hachage du mdp
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
+            // Création de l'utilisateur
             const user = new User({
                 email: req.body.email,
                 password: hash
@@ -15,10 +15,11 @@ exports.signup  = (req, res) => {
             // Savegarde l'utilisateur
             user.save()
                 .then(() => { res.status(201).json({message: 'Utilisateur inscris'})})
-                .catch(err => { res.status(400).json(err)})
+                .catch(err => { res.status(401).json(err)});
         })
-        .catch((err) => { res.status(400).json(err); })
+        .catch(err => res.status(500).json({msg: 'brcypt'}));
 };
+
 
 // Connexion a un compte, req = {email: string, password: string}, res{userId: string, token: string}
 exports.login  = (req, res) => {
