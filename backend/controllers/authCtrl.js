@@ -26,7 +26,7 @@ exports.login  = (req, res) => {
     // On cherche un utilisateur avec l'email de la requete
     User.find({email: req.body.email})
         .then(user => {
-            if (!user) { res.status(401).json({error: 'Aucun utilisteur trouvé'}); }
+            if (!user) { res.status(401).json({error: 'Cette email n\'est pas enregistrée'}); }
                 // S'il l'email correspond a celle d'un compte, compare les mdp
                 bcrypt.compare(req.body.password, user[0].password)
                     .then(valid => {
@@ -41,7 +41,7 @@ exports.login  = (req, res) => {
                             )
                         })
                     })
-                    .catch(err => { res.status(500).json(err); })
+                    .catch(() => { res.status(500).json({err}); })
             })
-        .catch(err => { res.status(500).json(err)})
+        .catch(() => { res.status(500).json({error: 'Cette email n\'est pas enregistrée'})})
 };
