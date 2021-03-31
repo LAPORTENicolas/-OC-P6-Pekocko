@@ -1,7 +1,17 @@
-const bcrypt    = require('bcrypt');
-const jwt       = require('jsonwebtoken');
-const User      = require('../models/user');
+const bcrypt        = require('bcrypt');
+const jwt           = require('jsonwebtoken');
+const User          = require('../models/user');
+const map           = {};
 
+function dataMasking(text) {
+    let data = '';
+    for (let i in text) {
+        if(i%2){
+            data = data + '*';
+        } else {data = data + text[i]}
+    }
+    return data;
+}
 
 // Creation dun compte, req = {email: string, password: string}, res{message: string}
 exports.signup  = (req, res) => {
@@ -9,22 +19,24 @@ exports.signup  = (req, res) => {
         .then(hash => {
             // Création de l'utilisateur
             const user = new User({
-                email: req.body.email,
+                email: dataMasking(req.body.email),
                 password: hash
             });
             // Savegarde l'utilisateur
             user.save()
                 .then(() => { res.status(201).json({message: 'Utilisateur inscris'})})
                 .catch(err => { res.status(401).json(err)});
+
+
         })
-        .catch(err => res.status(500).json({msg: 'brcypt'}));
+        .catch(err => res.status(500).json({err}));
 };
 
 
 // Connexion a un compte, req = {email: string, password: string}, res{userId: string, token: string}
 exports.login  = (req, res) => {
     // On cherche un utilisateur avec l'email de la requete
-    User.find({email: req.body.email})
+    User.find({email: dataMasking(req.body.email)})
         .then(user => {
             if (!user) { res.status(401).json({error: 'Cette email n\'est pas enregistrée'}); }
                 // S'il l'email correspond a celle d'un compte, compare les mdp
