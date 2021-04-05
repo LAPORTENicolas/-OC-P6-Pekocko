@@ -1,9 +1,10 @@
 const express   = require('express');
-const fs        = require('fs');
 const router    = express.Router();
 const ctrl      = require('../controllers/saucesCtrl');
 
+// Permet de vérifier si l'utilisteur est au authentifier
 const auth      = require('../middleware/auth');
+// Permet de gerer la sauvegarde/supression des images
 const multer    = require('../middleware/multer-config');
 
 

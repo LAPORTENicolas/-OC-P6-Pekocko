@@ -1,13 +1,18 @@
 const bcrypt        = require('bcrypt');
 const jwt           = require('jsonwebtoken');
 const User          = require('../models/user');
-const map           = {};
 
+
+// Permet de masquer les données
 function dataMasking(text) {
     let data = '';
+    // Fait un boucle de tout les lettre dans le var text
     for (let i in text) {
+        // Si 1 modulo 2
         if(i%2){
+            // Replacement du caractere par une étoile
             data = data + '*';
+            // Sinon on laisse le caractere
         } else {data = data + text[i]}
     }
     return data;
@@ -15,6 +20,7 @@ function dataMasking(text) {
 
 // Creation dun compte, req = {email: string, password: string}, res{message: string}
 exports.signup  = (req, res) => {
+    // Hash le mot de passe
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             // Création de l'utilisateur
