@@ -35,7 +35,7 @@ exports.signup  = (req, res) => {
 
 
         })
-        .catch(err => res.status(500).json({err}));
+        .catch(err => res.status(500).json(err));
 };
 
 
@@ -48,7 +48,7 @@ exports.login  = (req, res) => {
                 // S'il l'email correspond a celle d'un compte, compare les mdp
                 bcrypt.compare(req.body.password, user[0].password)
                     .then(valid => {
-                        if (!valid){ res.status(401).json({error: 'Le mot de passe n\'est pas correct'})}
+                        if (!valid){ res.status(401).json({error: new Error("Le mot de passe n'est pas correct")})}
                         // Si les mdp corresponde envoie les données utlisateur
                         res.status(200).json({
                             userId: user[0]._id,
@@ -59,7 +59,7 @@ exports.login  = (req, res) => {
                             )
                         })
                     })
-                    .catch(() => { res.status(500).json({err}); })
+                    .catch(err => res.status(500).json(err))
             })
-        .catch(() => { res.status(500).json({error: 'Cette email n\'est pas enregistrée'})})
+        .catch(err => res.status(401).json(err))
 };
