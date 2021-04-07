@@ -30,10 +30,8 @@ exports.signup  = (req, res) => {
             });
             // Savegarde l'utilisateur
             user.save()
-                .then(() => { res.status(201).json({message: 'Utilisateur inscris'})})
-                .catch(err => { res.status(401).json(err)});
-
-
+                .then(_ => res.status(201).json({message: 'Utilisateur inscris'}))
+                .catch(err => res.status(400).json(err));
         })
         .catch(err => res.status(500).json(err));
 };
@@ -44,7 +42,7 @@ exports.login  = (req, res) => {
     // On cherche un utilisateur avec l'email de la requete
     User.find({email: dataMasking(req.body.email)})
         .then(user => {
-            if (!user) { res.status(401).json({error: 'Cette email n\'est pas enregistrée'}); }
+            if (!user) { res.status(404).json({error: 'Cette email n\'est pas enregistrée'}); }
                 // S'il l'email correspond a celle d'un compte, compare les mdp
                 bcrypt.compare(req.body.password, user[0].password)
                     .then(valid => {
@@ -61,5 +59,5 @@ exports.login  = (req, res) => {
                     })
                     .catch(err => res.status(500).json(err))
             })
-        .catch(err => res.status(401).json(err))
+        .catch(err => res.status(500).json(err))
 };
