@@ -35,15 +35,23 @@ exports.newSauce    = (req, res) => {
 // Met a jour la sauce req = Sauce(JSON) OU {sauce: Chaîne, image: Fichier}, res = {message}
 exports.putSauce    = (req, res) => {
     // Vérifie si la sauce existe si oui la modifie
-    Sauce.updateOne({_id: req.params.id}, {
-        name: req.body.name,
-        manufacturer: req.body.manufacturer,
-        description: req.body.description,
-        mainPepper: req.body.mainPepper,
-        heat: req.body.heat,
-    })
-        .then(() => res.status(200).json({message: 'Sauce modifié'}))
-        .catch( err => res.status(400).json({err}));
+    const form  = req.file !== undefined ? {...JSON.parse(req.body.sauce)} : req.body
+
+
+    if (req.file !== undefined) {
+        Sauce.updateOne({_id: req.params.id}, {
+            ...form,
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        })
+            .then(() => res.status(200).json({message: 'Sauce modifié'}))
+            .catch( err => res.status(400).json({err}));
+    } else {
+        Sauce.updateOne({_id: req.params.id}, {
+            ...form
+        })
+            .then(() => res.status(200).json({message: 'Sauce modifié'}))
+            .catch( err => res.status(400).json({err}));
+    }
 }
 
 // Supprime une sauce req = vide, res = {message}
