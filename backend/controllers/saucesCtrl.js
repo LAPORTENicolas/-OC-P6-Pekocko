@@ -73,31 +73,19 @@ exports.like = (req, res) => {
             // Si une sauce existe avec l'id en parametre
             Sauce.findOne({_id: req.params.id})
                 .then(data => {
-                    // On fait une bloucle de tout les utlisateur
-                    for (let i in data.usersDisliked){
-                        if (data.usersDisliked[i] === req.body.userId){
-                            // Si l'utilisateur a disliikes on recupere le tableau puis on elever sont username de ce tableau et on enleve -1 au dislikes
-                            let tmpTab      = data.usersDisliked;
-                            let tmpDislike  = data.dislikes - 1;
-                            tmpTab.splice(i, 1);
-                            // Met a jour la sauce
-                            Sauce.updateOne({_id: req.params.id}, {usersDisliked: tmpTab, dislikes: tmpDislike})
-                                .then(() => res.status(201).json({message: 'Dislike retiré'}))
-                                .catch(err => res.status(400).json(err));
+                    if ((data.usersLiked.find(elm => elm === req.body.userId) === undefined)) {
+                        if (data.usersDisliked.find(elm => elm === req.body.userId) !== undefined) {
+                            Sauce.updateOne({ _id: req.params.id }, {$inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId }})
+                                .then(() => { res.status(201).json({ message: "Dislike retiré"}); })
+                                .catch((error) => { res.status(400).json({error}); });
                         }
-                    }
-                    for (let i in data.usersLiked){
-                        if (data.usersLiked[i] === req.body.userId){
-                            let tmpTab  = data.usersLiked;
-                            let tmpLike = data.likes - 1;
-                            tmpTab.splice(i, 1);
-                            Sauce.updateOne({_id: req.params.id}, {usersLiked: tmpTab, likes: tmpLike})
-                                .then(() => res.status(201).json({message: 'Like retiré'}))
-                                .catch(err => res.status(400).json(err));
-                        }
+                    } else {
+                        Sauce.updateOne({ _id: req.params.id }, {$inc: { likes: -1 }, $pull: { usersLiked: req.body.userId }})
+                            .then(() => { res.status(201).json({ message: "Like retiré"}); })
+                            .catch((error) => { res.status(400).json({error}); });
                     }
                 })
-                .catch(err => res.stack(400).json(err));
+                .catch(err => res.status(400).json(err));
             break;
         case 1:
             // Ajout un like dans le sauce correspondante
