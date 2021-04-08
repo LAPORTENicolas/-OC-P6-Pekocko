@@ -2,7 +2,6 @@ const bcrypt        = require('bcrypt');
 const jwt           = require('jsonwebtoken');
 const User          = require('../models/user');
 
-
 // Permet de masquer les données
 function dataMasking(text) {
     let data = '';
@@ -36,7 +35,6 @@ exports.signup  = (req, res) => {
         .catch(err => res.status(500).json({err}));
 };
 
-
 // Connexion a un compte, req = {email: string, password: string}, res{userId: string, token: string}
 exports.login  = (req, res) => {
     // On cherche un utilisateur avec l'email de la requete
@@ -46,7 +44,7 @@ exports.login  = (req, res) => {
                 // S'il l'email correspond a celle d'un compte, compare les mdp
                 bcrypt.compare(req.body.password, user[0].password)
                     .then(valid => {
-                        if (!valid){ res.status(401).json({error: new Error("Le mot de passe n'est pas correct")})}
+                        if (!valid){ res.status(401).json({error: "Le mot de passe n'est pas correct"})}
                         // Si les mdp corresponde envoie les données utlisateur
                         res.status(200).json({
                             userId: user[0]._id,

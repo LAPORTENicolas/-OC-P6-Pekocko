@@ -1,5 +1,4 @@
 // Inlusions des paquets
-
 const express       = require('express');
 const bodyParser    = require('body-parser');
 const path          = require('path');
@@ -30,7 +29,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Configuration des routes pour récuperer les images
+// Configuration de la route pour récuperer les images
 app.use('/images', express.static(path.join(__dirname, 'images')));
 // Configuration des routes pour l'authentification
 app.use('/api/auth', routesLogin);
