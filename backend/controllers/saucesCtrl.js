@@ -37,7 +37,6 @@ exports.putSauce    = (req, res) => {
     // Vérifie si la sauce existe si oui la modifie
     const form  = req.file !== undefined ? {...JSON.parse(req.body.sauce)} : req.body
 
-
     if (req.file !== undefined) {
         Sauce.updateOne({_id: req.params.id}, {
             ...form,
@@ -76,13 +75,14 @@ exports.deleteSauce = (req, res) => {
 // Permet de liker ou de disliker
 exports.like = (req, res) => {
     // Si la valeur de req.body.like est de -1 Mettre un dislike 0 enlever le like ou le dislikes 1 met un like
+    const check = elm => elm === req.body.userId;
     switch (req.body.like){
         case 0:
             // Si une sauce existe avec l'id en parametre
             Sauce.findOne({_id: req.params.id})
                 .then(data => {
-                    if ((data.usersLiked.find(elm => elm === req.body.userId) === undefined)) {
-                        if (data.usersDisliked.find(elm => elm === req.body.userId) !== undefined) {
+                    if ((!data.usersLiked.some(check))) {
+                        if (data.usersDisliked.some(check)) {
                             Sauce.updateOne({ _id: req.params.id }, {$inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId }})
                                 .then(() => { res.status(201).json({ message: "Dislike retiré"}); })
                                 .catch(err => res.status(400).json({err}) );
