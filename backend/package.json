@@ -20,6 +20,6 @@
     "mongoose": "^6.0.4",
     "mongoose-unique-validator": "^2.0.3",
     "multer": "^1.4.2",
-    "sqreen": "^1.62.0"
+    "sqreen": "^2.0.1"
   }
 }
